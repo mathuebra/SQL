@@ -121,3 +121,34 @@ INSERT INTO DEPENDENTE (CPF_FUNCIONARIO, NOME_DEPENDENTE, SEXO, DATA_NASCIMENTO,
 VALUES ('12345678966', 'Alicia', 'F', '30-12-1988', 'Filha');
 INSERT INTO DEPENDENTE (CPF_FUNCIONARIO, NOME_DEPENDENTE, SEXO, DATA_NASCIMENTO, PARENTESCO)
 VALUES ('12345678966', 'Elizabeth', 'F', '05-05-1967', 'Esposa');
+
+
+
+-- Tentativas de violação das seguintes restrições:
+-- de domínio
+INSERT INTO DEPENDENTE (CPF_FUNCIONARIO, NOME_DEPENDENTE, SEXO, DATA_NASCIMENTO, PARENTESCO)
+VALUES (123456789, 'Ana', 'F', '30', 'Esposa'); 
+
+-- de chave
+INSERT INTO FUNCIONARIO (PRIMEIRO_NOME, NOME_MEIO, ULTIMO_NOME, CPF, DATA_NASCIMENTO, ENDERECO, SEXO, SALARIO, CPF_SUPERVISOR, NUMERO_DEPARTAMENTO)
+VALUES ('Ana', 'A', 'Leite', '45345345376', '31-07-1972', 'Av. Lucas Obes, 74, São Paulo, SP', 'F', 25000, '33344555587', 5);
+-- tentar criar dois funcionários com o mesmo CPF, mas o CPF é primary key
+INSERT INTO DEPARTAMENTO (NOME_DEPARTAMENTO, NUMERO_DEPARTAMENTO, CPF_GERENTE, DATA_INICIO_GERENTE)
+VALUES ('RH', 6, '33344555587', '22-05-1968');
+-- CPF_GERENTE é UNIQUE, erro ao tentar criar outro departamento com o mesmo CPF
+
+-- de não nulo
+INSERT INTO FUNCIONARIO (PRIMEIRO_NOME, NOME_MEIO, ULTIMO_NOME, CPF, DATA_NASCIMENTO, ENDERECO, SEXO, SALARIO, CPF_SUPERVISOR, NUMERO_DEPARTAMENTO)
+VALUES ('Ana', 'A', 'Leite', '45345345376', '31-07-1972', 'Av. Lucas Obes, 74, São Paulo, SP', NULL, 25000, '33344555587', 5);
+-- a coluna SEXO não pode ser NULL
+
+-- de entidade
+INSERT INTO FUNCIONARIO (PRIMEIRO_NOME, NOME_MEIO, ULTIMO_NOME, CPF, DATA_NASCIMENTO, ENDERECO, SEXO, SALARIO, CPF_SUPERVISOR, NUMERO_DEPARTAMENTO)
+VALUES ('Ana', 'A', 'Leite', NULL, '31-07-1972', 'Av. Lucas Obes, 74, São Paulo, SP', 'F', 25000, '33344555587', 5);
+-- tenta criar um funcionário com CPF nulo, mas a coluna CPF é primary key, logo não pode ser NULL
+
+-- de integridade referencial
+INSERT INTO DEPENDENTE (CPF_FUNCIONARIO, NOME_DEPENDENTE, SEXO, DATA_NASCIMENTO, PARENTESCO)
+VALUES ('11111111111', 'Elizabeth', 'F', '05-05-1967', 'Esposa');
+-- CPF_FUNCIONARIO é foreign key e referencia CPF na tabela FUNCIONARIo
+-- como não existe nenhum funcionário com o CPF 11111111111 causa uma violação de restrição de integridade referencial
