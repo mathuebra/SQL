@@ -1,0 +1,92 @@
+-- Conceito de transação: um cojunto de operações (DML) que são logicamente relacionadas
+-- algum fato, evento ou ação de sistema que usa banco de dados
+-- Exemplo: transação bancária - um  depósito, um saque, um pix (retirada em uma conta e depósito em outra)
+-- 1) Criação da tabela conta
+drop table conta;
+create table conta 
+(num number(5) primary key, 
+cpf varchar(11) not null, 
+saldo number(10,2) not null check (saldo >=0) );
+
+desc conta
+select * from conta;
+select * from eclbdit100.conta;
+--create synonym conta for eclbdit100.conta;
+
+grant all on conta to public; -- atualizaç
+
+select * from eclbdit100.conta;
+
+-- 1) Deposito inicial na conta 1
+insert into conta values (1,'11',1000);
+select * from conta;
+commit;
+-- 2) Deposito inicial na conta 2
+insert into conta values (2,'22',2000);
+select * from conta;
+commit;
+-- 3) Pix entre conta 1 e conta 2 de 500
+update conta set saldo=saldo-500 where num=1;
+select * from conta;
+update conta set saldo=saldo+500 where num=2;
+select * from conta;
+commit;
+select * from conta;
+rollback;
+select * from conta;
+-- um commit, rollback ou comando ddl (alter, create ...) e dcl (grant e revoke)
+-- finalizam uma transaçao pendente, consequentemente permitem que uma nova transação 
+-- se inicie
+-- Cada sessão (login ao banco) só pode manter uma transação iniciada ou ativa.
+-- se for não confirmada depois de algum tempo, o sgbd faz um rollback implícito
+--3) Simulando um pix com erro - Pix entre conta 1 e conta 2 de 100
+update conta set saldo=saldo-100 where num=1;
+select * from conta;
+update conta set saldo=saldo+10 where num=2;
+select * from conta;
+rollback;
+select * from conta;
+-- controle de concorrencia
+-- t0: saque total na 1
+update conta set saldo=0 where num=1;
+select * from conta where num=1;
+
+
+
+
+
+-- t2: rollback
+rollback;
+
+-- t4: 
+update conta set saldo=0 where num=1;
+select * from conta where num=1;
+
+
+-- t6
+select * from conta where num=2;
+update conta set saldo=0 where num=2;
+
+
+-- t8
+select * from conta where num=2;
+
+
+-- t9
+rollback;
+select * from eclbdit100.conta;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
